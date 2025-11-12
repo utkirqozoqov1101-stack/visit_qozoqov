@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Qozoqov O'tkir Yo'ldoshovich — Yakuniy 3D Vizitka</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    /* Global O'zgaruvchilar */
+    :root{
+        --main-blue:#0056b3; /* Ko'k rangni to'qroq qildik */
+        --light-blue:#e3f2fd;
+        --dark-blue:#0e1837;
+        --text-light: #ffffff;
+        --text-dark: #111111;
+        --secondary-font: 'Georgia', serif; /* O'tkir Qozoqov uchun yangi font */
+    }
+    *{box-sizing:border-box}
+    
+    /* GRADIENT FONI */
+    body{
+        font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; 
+        margin:0; 
+        min-height: 100vh;
+        background: linear-gradient(to bottom, var(--dark-blue) 0%, #ffffff 100%); 
+        color: var(--text-dark);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .wrap{
+        padding: 24px;
+        perspective: 1000px; 
+        margin: 40px auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* ------------------------------------- */
+    /* 1. FLIP CARD UCHUN ASOSIY QOIDALAR (Gorizontal) */
+    /* ------------------------------------- */
+    .flip-container {
+        width: 600px; 
+        height: 340px; 
+        position: relative;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+        cursor: pointer;
+    }
+    .flip-container.flipped {
+        transform: rotateY(180deg);
+    }
+    
+    .flipper {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        backface-visibility: hidden; 
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    /* ------------------------------------- */
+    /* 2. OLD TOMON (FRONT) STILI */
+    /* ------------------------------------- */
+    .front {
+        /* To'q Ko'k va Oq gradyent */
+        background: linear-gradient(to right, var(--main-blue) 0%, var(--light-blue) 100%);
+        color: var(--text-dark);
+        position: relative;
+    }
+    
+    /* Nuqtali Naqshlar */
+    .front::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: 
+            radial-gradient(var(--main-blue) 2px, transparent 0),
+            radial-gradient(rgba(255, 255, 255, 0.4) 2px, transparent 0); 
+        background-size: 20px 20px, 20px 20px;
+        background-position: 10px 10px, 0 0;
+        opacity: 0.8;
+        z-index: 1;
+    }
+
+    /* Kontentni oldinga olib chiqish */
+    .front > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Ikki qismga bo'lish */
+    .front-content {
+        display: flex;
+        height: 100%;
+        padding: 25px;
+    }
+
+    .left-side, .right-side {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Asosiy Ajratuvchi Chiziq */
+    .divider {
+        width: 1px;
+        height: 85%;
+        margin: 10px 20px;
+        align-self: center;
+        background: rgba(0, 0, 0, 0.1); 
+        border-left: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* CHAP QISM YAZUVLARI */
+    .left-side {
+        /* Matn joyini yuqoriroqqa ko'taramiz */
+        justify-content: flex-start; 
+        align-items: flex-start;
+        color: var(--text-light);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        padding-right: 10px;
+    }
+    .top-info {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 30px; /* Ism blokiga bo'lgan masofani ochamiz */
+    }
+    .ministry-text {
+        font-size: 8px; 
+        line-height: 1.2;
+        font-weight: 500;
+        width: 60px; 
+    }
+    .ministry-divider {
+        width: 1px;
+        height: 30px; 
+        background-color: rgba(255, 255, 255, 0.4); 
+        margin: 0 8px;
+        align-self: flex-start;
+    }
+    .jizzakh-text {
+        font-size: 24px; 
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: #ffffff;
+    }
+
+    .name-block {
+        margin-top: 20px; /* Yuqoriroqqa ko'tarish effektini kuchaytiramiz */
+    }
+    .name-block h1 {
+        font-size: 38px; /* Yana kattaroq */
+        margin: 0;
+        line-height: 0.85; 
+        text-align: left;
+        font-family: var(--secondary-font); /* Yangi yozuv turi */
+        font-weight: 900;
+    }
+    .name-block h1:last-child {
+        margin-top: 5px;
+        margin-bottom: 8px;
+    }
+    .jdpulider {
+        font-size: 14px; 
+        text-align: left;
+        color: #ddd;
+        font-style: italic;
+    }
+    
+    /* O'NG QISM STILI */
+    .right-side {
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding-left: 10px;
+    }
+
+    /* QR KOD */
+    .qr-code-box {
+        width: 120px;
+        height: 120px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 5px; 
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        margin-top: 0; 
+    }
+    .qr-code-box img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
+    }
+    .qr-info-text {
+        color: var(--text-light); 
+        font-size: 12px; 
+        margin-top: 15px; /* Ko'proq pastga tushirdik */
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        font-weight: 600;
+    }
+    
+    /* Aloqa Ma'lumotlari (o'ng qismda) */
+    .contact-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-left: 0;
+        margin-top: 30px; /* Masofani ochdik */
+    }
+    .contact-list a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text-dark);
+        font-size: 14px;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 5px 8px;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s;
+    }
+    .contact-list a:hover {
+        transform: translateX(3px);
+    }
+    .contact-list i {
+        margin-right: 8px;
+        font-size: 16px;
+        /* Barcha ikonkalar to'q ko'k rangda */
+        color: var(--dark-blue) !important; 
+        filter: none; /* Rangni to'q ko'k qilish uchun soyaning oldi olindi */
+    }
+
+
+    /* ------------------------------------- */
+    /* 3. ORQA TOMON (BACK) STILI - Statik To'q Ko'k / Oq */
+    /* ------------------------------------- */
+    .back {
+        transform: rotateY(180deg);
+        /* Statik To'q Ko'k va Oq gradyent */
+        background: linear-gradient(120deg, var(--dark-blue) 0%, #ffffff 100%); 
+        padding: 40px;
+        justify-content: center;
+        color: var(--text-dark);
+    }
+    .back h2, .back p {
+        text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.7);
+    }
+    .back h2 {
+        font-size: 28px;
+        color: var(--dark-blue);
+        margin-bottom: 5px;
+    }
+    .back p {
+        color: var(--dark-blue);
+        font-size: 16px;
+        margin-top: 10px;
+        font-weight: 500;
+    }
+    .back i {
+        color: var(--main-blue); 
+        margin-bottom: 20px;
+        font-size: 80px;
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.3));
+    }
+
+    
+    @media (max-width:650px){
+        /* Responsivlik sozlamalari o'zgartirilmadi */
+        .flip-container {
+            width: 90vw;
+            height: 50vw;
+            min-height: 250px;
+        }
+        .front-content { padding: 15px; }
+        .divider { margin: 10px 10px; }
+        .qr-code-box { width: 100px; height: 100px; }
+        .contact-list a { font-size: 11px; padding: 4px 6px; }
+        .name-block h1 { font-size: 28px; }
+        .jizzakh-text { font-size: 20px; }
+        .ministry-text { font-size: 7px; width: 50px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="flip-container" id="flipCard">
+      
+      <div class="flipper front">
+        <div class="front-content">
+          <div class="left-side">
+            <div class="top-info">
+              <div class="ministry-text">
+                MAKTABGACHA VA MAKTAB TA'LIMI VAZIRLIGI
+              </div>
+              <div class="ministry-divider"></div>
+              <div class="jizzakh-text">
+                JIZZAKH
+              </div>
+            </div>
+            
+            <div class="name-block">
+              <h1 id="firstName">O'TKIR</h1>
+              <h1 id="lastName">QOZOQOV</h1>
+              <p class="jdpulider" id="role">JDPU LIDER</p>
+            </div>
+          </div>
+          
+          <div class="divider"></div>
+
+          <div class="right-side">
+            <div class="qr-code-box">
+              <img src="index.jpg" alt="QR Kod">
+            </div>
+            <p class="qr-info-text">BATAFSIL MA'LUMOT</p> 
+
+            <div class="contact-list">
+              <a href="tel:+998940665455" id="phoneLink"><i class="fa-solid fa-phone"></i> +998 94 066 54 55</a>
+              <a href="https://t.me/utkir_qozoqov" target="_blank" id="tgLink"><i class="fa-brands fa-telegram"></i> @utkir_qozoqov</a>
+              <a href="mailto:utkirqozoqov1101@gmail.com" id="emailLink"><i class="fa-solid fa-envelope"></i> utkirqozoqov1101@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flipper back">
+        <i class="fa-solid fa-gem"></i>
+       <h2>JDPU Yoshlar akademiyasi</h2>
+        <p>Kelajakni birgalikda quraylik. <br> Taqdimotlar va loyihalar bo'yicha bog'laning.</p>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  // 3D aylantirish funksiyasi
+  document.getElementById('flipCard').addEventListener('click', function(e) {
+    // Aloqa linklari va QR-kodga bosganda aylantirmaslik
+    if (e.target.closest('.contact-list a') === null && e.target.closest('.qr-code-box') === null) {
+      this.classList.toggle('flipped');
+    }
+  });
+</script>
+</body>
+</html>
